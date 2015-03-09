@@ -6,13 +6,15 @@ from evedb.ships     import get_all_published_ships_basic
 from evedb.universe  import get_bordering_regions, get_all_non_wh_regions
 from evedb.inventory import get_all_published_groups_in_category
 
+from eve_utils.image_server import get_type_links
+
 
 class Question(object):
     """ Base class for creating different question categories.
     
     Each class should be based around a specific category of questions.
     
-    Answeres returned must conform to the following format:
+    Answeres returned must contain the following information:
     {
         "answer": 0,  # Value of the correct answer.
         "choices": [  # List of possible answers including the correct one.
@@ -22,6 +24,8 @@ class Question(object):
         ],
         "question": "Poitot is famous for being...?"  # Display text for the question.
     }
+    
+    You may add other optional fields on top of that.
     
     """
     
@@ -49,8 +53,29 @@ class QuestionShip(Question):
         
         self.question_registry = [
             self.ship_class,
+            self.select_ship_from_image,
         ]
     
+    
+    def select_ship_from_image(self):
+        """ Asks user to select the correct ship name based on an image. """
+        
+        ships         = get_all_published_ships_basic()
+        selected_ship = choice(ships)
+        
+        choices = sample(ships, self.num_answers)
+        choices.append(selected_ship)
+        
+        choices = [(x[0], x[1]) for x in choices]
+        shuffle(choices)
+        
+        return {
+            'question' : 'What ship is pictured?',
+            'choices'  : choices,
+            'answer'   : selected_ship[0],
+            'images'   : get_type_links(selected_ship[0]),
+        }
+        
     
     def ship_class(self):
         """ Asks what class a specific ship is. """
