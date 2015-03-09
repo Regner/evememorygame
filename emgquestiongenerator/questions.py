@@ -133,7 +133,9 @@ class QuestionUniverse(Question):
 def random_question_class():
     """ Returns a random Question class. """
     
-    return choice([
+    selected_class = choice([
         QuestionShip,
         QuestionUniverse,
     ])
+    
+    return selected_class()

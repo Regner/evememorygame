@@ -27,7 +27,6 @@ class QuestionRandomCategory(Resource):
     
     def get(self):
         random_class = random_question_class()
-        random_class = random_class()
         question     = random_class.get_random_question()
         
         result = question()
