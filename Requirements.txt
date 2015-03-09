@@ -1,0 +1,8 @@
+Flask-RESTful
+Flask-Script
+Flask
+
+requests
+
+# This is needed for the newest version of Flask on Linux
+watchdog
