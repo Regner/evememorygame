@@ -201,7 +201,7 @@ class QuestionUniverse(Question):
         return {
             'question' : 'Which of the following regions borders the {} region?'.format(random_region[1]),
             'choices'  : convert_choices_to_dict(choices),
-            'answer'   : random_region[0],
+            'answer'   : answer[0],
         }
         
     def region_with_poitot(self):
