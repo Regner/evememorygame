@@ -153,14 +153,12 @@ class QuestionUniverse(Question):
         all_regions       = get_all_non_wh_regions()
         random_region     = choice(all_regions)
         bordering_regions = get_bordering_regions(random_region[0])
+        answer            = choice(bordering_regions)
         
-        excluded_regions = bordering_regions
-        excluded_regions.append(random_region)
-        
-        regions_to_choose_from = list(set(all_regions) - set(excluded_regions))
+        regions_to_choose_from = list(set(all_regions) - set(bordering_regions) - set(random_region))
         
         choices = sample(regions_to_choose_from, self.num_answers)
-        choices.append(random_region)
+        choices.append(answer)
         shuffle(choices)
         
         return {
