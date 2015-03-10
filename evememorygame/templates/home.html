@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>EVE Memory Game</title>
+        <link rel="stylesheet" href="/static/vendor/bootstrap/dist/css/bootstrap.min.css">
+
+        <script src="/static/vendor/jquery/dist/jquery.min.js"></script>
+        <script src="/static/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <p>The API for this can be found <a href="questions/">here</a> and the source code <a hreg="https://github.com/Regner/evememorygame">here</a>.</p>
+        
+        <script id="entry-template" type="text/x-handlebars-template">
+          <div>
+            <h1>{{question}}</h1>
+            {{#if images}}
+                {{#with images}}
+                    <img src="{{512}}"></img>
+                {{/with}}
+            {{/if}}
+            <div>
+                <ul>
+                {{#each choices}}
+                    <li>{{text}}</li>
+                {{/each}}
+                </ul>
+            </div>
+          </div>
+        </script>
+        
+        <script src="/static/vendor/handlebars/handlebars.min.js"></script>
+        <script src="/static/js/emg.js"></script>
+    </body>
+</html>
