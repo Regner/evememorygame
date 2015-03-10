@@ -4,7 +4,7 @@ from random import choice, sample, shuffle
 
 from evedb.ships     import get_all_published_ships_basic
 from evedb.universe  import get_bordering_regions, get_all_non_wh_regions
-from evedb.inventory import get_all_published_groups_in_category, get_dogma_attribute_for_type
+from evedb.inventory import get_all_published_groups_in_category, get_dogma_attribute_for_type, get_all_traits, get_all_traits_for_type
 
 from eve_utils.image_server import get_type_links
 
@@ -55,6 +55,7 @@ class QuestionShip(Question):
             self.ship_class,
             self.select_ship_from_image,
             self.number_of_slots,
+            self.ship_trait,
         ]
         
     
@@ -86,7 +87,7 @@ class QuestionShip(Question):
         
         return {
             'question' : question[3],
-            'choices'  : choices,
+            'choices'  : convert_choices_to_dict(choices),
             'answer'   : answer,
             'images'   : get_type_links(selected_ship[0]),
         }
@@ -105,7 +106,7 @@ class QuestionShip(Question):
         
         return {
             'question' : 'What ship is pictured?',
-            'choices'  : choices,
+            'choices'  : convert_choices_to_dict(choices),
             'answer'   : selected_ship[0],
             'images'   : get_type_links(selected_ship[0]),
         }
@@ -129,11 +130,47 @@ class QuestionShip(Question):
         
         return {
             'question' : 'Which of the following categories does the {} belong to?'.format(selected_ship[1]),
-            'choices'  : choices,
+            'choices'  : convert_choices_to_dict(choices),
             'answer'   : selected_ship[2],
         }
+    
+    
+    def ship_trait(self):
+        """ Asks which of the traits a specific ship has. """
         
-
+        def convert_trait(trait_tuple):
+            return (trait_tuple[0], '{}{} {}'.format(trait_tuple[1], trait_tuple[2], trait_tuple[3]))
+            
+        
+        ships = get_all_published_ships_basic()
+        
+        # There is totally a better way to do this... but no sleep and only a
+        #few minutes at a time to do anything means I got this... yuck.
+        while True:
+            selected_ship = choice(ships)
+            
+            ship_traits = get_all_traits_for_type(selected_ship[0])
+            
+            if len(ship_traits) > 0:
+                selected_trait = choice(ship_traits)
+                break
+        
+        traits = get_all_traits()
+        
+        # Remove all the traits for the selected ship so we don't end up with
+        # two traits from it in the choices
+        traits_to_choose_from = list(set(traits) - set(ship_traits))
+        
+        choices = [convert_trait(x) for x in sample(traits_to_choose_from, self.num_answers)]
+        choices.append(convert_trait(selected_trait))
+        shuffle(choices)
+        
+        return {
+            'question' : 'Which of the following traits does the {} have?'.format(selected_ship[1]),
+            'choices'  : convert_choices_to_dict(choices),
+            'answer'   : selected_ship[0],
+        }
+        
 
 class QuestionUniverse(Question):
     def __init__(self, num_answers=3):
@@ -163,7 +200,7 @@ class QuestionUniverse(Question):
         
         return {
             'question' : 'Which of the following regions borders the {} region?'.format(random_region[1]),
-            'choices'  : choices,
+            'choices'  : convert_choices_to_dict(choices),
             'answer'   : random_region[0],
         }
         
@@ -182,9 +219,24 @@ class QuestionUniverse(Question):
         
         return {
             'question' : 'Poitot is famous for being...?',
-            'choices'  : choices,
+            'choices'  : convert_choices_to_dict(choices),
             'answer'   : 0,
         }
+
+
+def convert_choices_to_dict(choices):
+    new_choices = []
+    
+    for x in choices:
+        if isinstance(x, int) or isinstance(x, float):
+            x = (x, x)
+        
+        new_choices.append({
+        'value' : x[0],
+        'text'  : x[1],
+    })
+    
+    return new_choices
 
 
 def random_question_class():

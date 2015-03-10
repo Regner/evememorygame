@@ -47,6 +47,10 @@ class QuestionsCollection(Resource):
                             'href' : url_for('question_ships_slots_category', _external=True),
                             'name' : 'Slots',
                         },
+                        'traits' : {
+                            'href' : url_for('question_ships_traits_category', _external=True),
+                            'name' : 'Traits',
+                        },
                     },
                 },
             }
@@ -154,6 +158,18 @@ class QuestionShipsSlotsCategory(Resource):
         return result
 
 
+class QuestionShipsTraitsCategory(Resource):
+    """  """
+    
+    def get(self):
+        ships = QuestionShip()
+        
+        result = ships.ship_trait()
+        result['category'] = ships.__class__.__name__.lower()
+        
+        return result
+
+
 class Test(Resource):
     """ TESTING """
     
@@ -174,3 +190,5 @@ def register_apis(api):
     api.add_resource(QuestionShipsClassCategory,              '/questions/ships/class_id/',            endpoint='question_ships_class_id_category')
     api.add_resource(QuestionShipsIdentificationCategory,     '/questions/ships/image_id/',            endpoint='question_ships_image_id_category')
     api.add_resource(QuestionShipsSlotsCategory,              '/questions/ships/slots/',               endpoint='question_ships_slots_category')
+    api.add_resource(QuestionShipsTraitsCategory,             '/questions/ships/traits/',              endpoint='question_ships_traits_category')
+    
