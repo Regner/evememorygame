@@ -4,7 +4,7 @@ from random import choice, sample, shuffle
 
 from evedb.ships     import get_all_published_ships_basic
 from evedb.universe  import get_bordering_regions, get_all_non_wh_regions
-from evedb.inventory import get_all_published_groups_in_category
+from evedb.inventory import get_all_published_groups_in_category, get_dogma_attribute_for_type
 
 from eve_utils.image_server import get_type_links
 
@@ -54,8 +54,42 @@ class QuestionShip(Question):
         self.question_registry = [
             self.ship_class,
             self.select_ship_from_image,
+            self.number_of_slots,
         ]
+        
     
+    def number_of_slots(self):
+        """ Asks the user to select the correct number of hi/med/low slots. """
+        
+        ships         = get_all_published_ships_basic()
+        selected_ship = choice(ships)
+        
+        # Questions are tuples of dogma attribute, text for question
+        questions = [
+            (12,  0, 9, 'How many high slots does the {} have?'.format(selected_ship[1])),
+            (13,  0, 9, 'How many mid slots does the {} have?'.format(selected_ship[1])),
+            (14,  0, 9, 'How many low slots does the {} have?'.format(selected_ship[1])),
+            (101, 0, 9, 'How many launcher hardpoints does the {} have?'.format(selected_ship[1])),
+            (102, 0, 9, 'How many turret hardpoints does the {} have?'.format(selected_ship[1])),
+        ]
+        
+        question = choice(questions)
+        
+        answer = get_dogma_attribute_for_type(selected_ship[0], question[0])
+    
+        possible_answers = range(question[1], question[2])
+        possible_answers = list(set(possible_answers) - set([answer]))
+        
+        choices = sample(possible_answers, self.num_answers)
+        choices.append(answer)
+        shuffle(choices)
+        
+        return {
+            'question' : question[3],
+            'choices'  : choices,
+            'answer'   : answer,
+            'images'   : get_type_links(selected_ship[0]),
+        }
     
     def select_ship_from_image(self):
         """ Asks user to select the correct ship name based on an image. """

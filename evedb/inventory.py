@@ -16,3 +16,16 @@ def get_all_published_groups_in_category(category_id):
     groups = [x for x in groups]
     
     return groups
+
+
+def get_dogma_attribute_for_type(type_id, dogma_attribute_id):
+    with connect() as db:
+        effect = db.execute('''
+            SELECT COALESCE(dgmTypeAttributes.valueInt, dgmTypeAttributes.valueFloat)
+              FROM invTypes
+              LEFT JOIN dgmTypeAttributes ON invTypes.typeID = dgmTypeAttributes.typeID
+             WHERE invTypes.typeID = {}
+               AND dgmTypeAttributes.attributeID = {}
+        '''.format(type_id, dogma_attribute_id)).fetchone()[0]
+    
+    return effect

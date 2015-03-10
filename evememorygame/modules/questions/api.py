@@ -59,11 +59,21 @@ class QuestionShipsCategory(Resource):
         result['category'] = ships.__class__.__name__.lower()
         
         return result
+
+
+class Test(Resource):
+    """ TESTING """
+    
+    def get(self):
+        test = get_dogma_attribute_for_type(641, 12)
+        print test
+        return {}
     
 
 def register_apis(api):
     """ Registers the API resources defined in this file with the app in it's application factory. """
     
+    api.add_resource(Test,                     '/test/')
     api.add_resource(QuestionsCollection,      '/questions/')
     api.add_resource(QuestionRandomCategory,   '/questions/random/',   endpoint='question_random_category')
     api.add_resource(QuestionUniverseCategory, '/questions/universe/', endpoint='question_universe_category')
